@@ -10,6 +10,7 @@ torchvision = "*"
 matplotlib = "*"
 ipykernel = "*"
 black = "*"
+pyautogui = "*"
 
 [dev-packages]
 
