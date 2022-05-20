@@ -11,6 +11,7 @@ matplotlib = "*"
 ipykernel = "*"
 black = "*"
 pyautogui = "*"
+stable-baselines3 = {extras = ["extra"], version = "*"}
 
 [dev-packages]
 
