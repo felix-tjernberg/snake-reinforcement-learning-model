@@ -55,6 +55,7 @@ class SnakeGame:
         self._place_food()
 
     def game_tick(self):
+        self._check_agent_input()
         self._move_snake()
         self._check_collision()
 
@@ -63,8 +64,6 @@ class SnakeGame:
             self.clock.tick(self.GAME_SPEED)
         else:
             self.clock.tick()
-
-        self._check_agent_input()
 
     def reset_game(self):
         self.agent_action = None
