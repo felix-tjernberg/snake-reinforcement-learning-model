@@ -15,9 +15,9 @@ class Direction(Enum):
 
 
 class SnakeGame:
-    BLOCK_SIZE = 20
+    BLOCK_SIZE = 20  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
-    GAME_SPEED = 10  # Changes game difficulty
+    GAME_SPEED = 10  # Changes game difficulty for humans ;)
 
     def __init__(self, display_height=480, display_width=480):
         pygame.init()

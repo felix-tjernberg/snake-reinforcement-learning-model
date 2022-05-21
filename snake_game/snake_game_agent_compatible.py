@@ -2,6 +2,7 @@ import pygame
 from random import randint
 from enum import Enum
 from collections import namedtuple
+from time import sleep
 
 
 Coordinate = namedtuple("Coordinate", "x, y")
@@ -15,28 +16,21 @@ class Direction(Enum):
 
 
 class SnakeGame:
-    BLOCK_SIZE = 20
+    BLOCK_SIZE = 20  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
-    GAME_SPEED = 10  # Changes game difficulty
+    GAME_SPEED = 10  # Changes game difficulty for humans ;)
 
     def __init__(
         self,
         *,
-        agent_driver=False,
         display_height=480,
         display_ui=True,
         display_width=480,
     ):
         pygame.init()
-        pygame.display.set_caption("Maskjävel")
         self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
 
-        # Agent variables
-        self.agent_action = None
-        self.agent_driver = agent_driver
-
         # User Interface
-        self.display_border = False
         self.display_height = display_height
         self.display_ui = display_ui
         self.display_width = display_width
@@ -45,6 +39,7 @@ class SnakeGame:
         )
 
         # Game State
+        self.agent_action = None
         self.clock = pygame.time.Clock()
         self.direction = Direction.RIGHT
         self.game_over = False
@@ -59,17 +54,10 @@ class SnakeGame:
         ]
         self._place_food()
 
-    def game_tick(self, *, agent_action=None):
+    def game_tick(self):
         self._move_snake()
         self.body.insert(0, self.head)
-
         self._check_collision()
-        if self.game_over:
-            if self.agent_driver:
-                return
-            else:
-                pygame.quit()
-                return self.game_over, self.score
 
         if self.display_ui:
             self._update_display()
@@ -77,10 +65,8 @@ class SnakeGame:
         else:
             self.clock.tick()
 
-        if self.agent_driver:
-            self.agent_action = agent_action
-        self._get_user_input()
-        return self.game_over, self.score
+        self._check_agent_input()
+        return self.game_over
 
     def reset_game(self):
         self.agent_action = None
@@ -94,6 +80,27 @@ class SnakeGame:
             Coordinate(self.head.x - self.BLOCK_SIZE * 2, self.head.y),
         ]
         self._place_food()
+
+    def _check_agent_input(self):
+        change_to_direction = None
+        if self.agent_action == Direction.DOWN:
+            change_to_direction = Direction.DOWN
+        elif self.agent_action == Direction.LEFT:
+            change_to_direction = Direction.LEFT
+        elif self.agent_action == Direction.RIGHT:
+            change_to_direction = Direction.RIGHT
+        elif self.agent_action == Direction.UP:
+            change_to_direction = Direction.UP
+
+        # Check if input makes snake go back into itself and prevent that
+        if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
+            self.direction = Direction.UP
+        if change_to_direction == Direction.DOWN and self.direction != Direction.UP:
+            self.direction = Direction.DOWN
+        if change_to_direction == Direction.LEFT and self.direction != Direction.RIGHT:
+            self.direction = Direction.LEFT
+        if change_to_direction == Direction.RIGHT and self.direction != Direction.LEFT:
+            self.direction = Direction.RIGHT
 
     def _check_collision(self):
         if (
@@ -113,53 +120,6 @@ class SnakeGame:
             self._place_food()
         else:
             self.body.pop()
-
-    def _get_user_input(self):
-        change_to_direction = None
-        if self.agent_driver:
-            if self.agent_action == Direction.DOWN:
-                change_to_direction = Direction.DOWN
-            elif self.agent_action == Direction.LEFT:
-                change_to_direction = Direction.LEFT
-            elif self.agent_action == Direction.RIGHT:
-                change_to_direction = Direction.RIGHT
-            elif self.agent_action == Direction.UP:
-                change_to_direction = Direction.UP
-        else:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_DOWN:
-                        change_to_direction = Direction.DOWN
-                    elif event.key == pygame.K_LEFT:
-                        change_to_direction = Direction.LEFT
-                    elif event.key == pygame.K_RIGHT:
-                        change_to_direction = Direction.RIGHT
-                    elif event.key == pygame.K_UP:
-                        change_to_direction = Direction.UP
-                    elif event.key == pygame.K_SPACE:
-                        self.update_display = not self.update_display
-                    elif event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                    elif event.key == pygame.K_b:
-                        pygame.display.set_mode(
-                            (self.display_height, self.display_width), pygame.SHOWN
-                        )
-                    elif event.key == pygame.K_n:
-                        pygame.display.set_mode(
-                            (self.display_height, self.display_width), pygame.NOFRAME
-                        )
-
-        # Check if input makes snake go back into itself and prevent that
-        if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
-            self.direction = Direction.UP
-        if change_to_direction == Direction.DOWN and self.direction != Direction.UP:
-            self.direction = Direction.DOWN
-        if change_to_direction == Direction.LEFT and self.direction != Direction.RIGHT:
-            self.direction = Direction.LEFT
-        if change_to_direction == Direction.RIGHT and self.direction != Direction.LEFT:
-            self.direction = Direction.RIGHT
 
     def _move_snake(self):
         x = self.head.x
@@ -214,8 +174,14 @@ class SnakeGame:
 if __name__ == "__main__":
     snake_game_instance = SnakeGame()
 
-    while True:
-        game_over, score = snake_game_instance.game_tick()
-        if game_over:
-            break
-    print(f"Score: {score}")
+    snake_game_instance.game_tick()
+    snake_game_instance.agent_action = Direction.DOWN
+    snake_game_instance.game_tick()
+    snake_game_instance.agent_action = Direction.LEFT
+    snake_game_instance.game_tick()
+    snake_game_instance.agent_action = Direction.UP
+    snake_game_instance.game_tick()
+    sleep(2)
+    snake_game_instance.reset_game()
+    snake_game_instance.game_tick()
+    sleep(2)
