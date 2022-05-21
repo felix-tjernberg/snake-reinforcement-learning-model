@@ -16,22 +16,33 @@ class Direction(Enum):
 
 class SnakeGame:
     BLOCK_SIZE = 20
-    COLORS = {"BACKGROUND": (154, 197, 2), "FOREGROUND": (1, 2, 0)}
-    GAME_SPEED = 10
+    COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
+    GAME_SPEED = 10  # Changes game difficulty
 
-    def __init__(self, display_height=480, display_width=480):
+    def __init__(
+        self,
+        *,
+        agent_driver=False,
+        display_height=480,
+        display_ui=True,
+        display_width=480,
+    ):
         pygame.init()
         pygame.display.set_caption("Maskjävel")
         self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
 
+        # Agent variables
+        self.agent_action = None
+        self.agent_driver = agent_driver
+
         # User Interface
         self.display_border = False
         self.display_height = display_height
+        self.display_ui = display_ui
         self.display_width = display_width
         self.display = pygame.display.set_mode(
             (self.display_height, self.display_width), pygame.NOFRAME
         )
-        self.update_display = True
 
         # Game State
         self.clock = pygame.time.Clock()
@@ -48,23 +59,41 @@ class SnakeGame:
         ]
         self._place_food()
 
-    def game_tick(self):
+    def game_tick(self, *, agent_action=None):
         self._move_snake()
         self.body.insert(0, self.head)
 
         self._check_collision()
         if self.game_over:
-            pygame.quit()
-            return self.game_over, self.score
+            if self.agent_driver:
+                return
+            else:
+                pygame.quit()
+                return self.game_over, self.score
 
-        if self.update_display:
+        if self.display_ui:
             self._update_display()
             self.clock.tick(self.GAME_SPEED)
         else:
             self.clock.tick()
 
+        if self.agent_driver:
+            self.agent_action = agent_action
         self._get_user_input()
         return self.game_over, self.score
+
+    def reset_game(self):
+        self.agent_action = None
+        self.direction = Direction.RIGHT
+        self.game_over = False
+        self.score = 0
+        self.head = Coordinate(self.display_height / 2, self.display_width / 2)
+        self.body = [
+            self.head,
+            Coordinate(self.head.x - self.BLOCK_SIZE, self.head.y),
+            Coordinate(self.head.x - self.BLOCK_SIZE * 2, self.head.y),
+        ]
+        self._place_food()
 
     def _check_collision(self):
         if (
@@ -87,32 +116,42 @@ class SnakeGame:
 
     def _get_user_input(self):
         change_to_direction = None
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    change_to_direction = Direction.DOWN
-                elif event.key == pygame.K_LEFT:
-                    change_to_direction = Direction.LEFT
-                elif event.key == pygame.K_RIGHT:
-                    change_to_direction = Direction.RIGHT
-                elif event.key == pygame.K_UP:
-                    change_to_direction = Direction.UP
-                elif event.key == pygame.K_SPACE:
-                    self.update_display = not self.update_display
-                elif event.key == pygame.K_ESCAPE:
+        if self.agent_driver:
+            if self.agent_action == Direction.DOWN:
+                change_to_direction = Direction.DOWN
+            elif self.agent_action == Direction.LEFT:
+                change_to_direction = Direction.LEFT
+            elif self.agent_action == Direction.RIGHT:
+                change_to_direction = Direction.RIGHT
+            elif self.agent_action == Direction.UP:
+                change_to_direction = Direction.UP
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     pygame.quit()
-                elif event.key == pygame.K_b:
-                    pygame.display.set_mode(
-                        (self.display_height, self.display_width), pygame.SHOWN
-                    )
-                elif event.key == pygame.K_n:
-                    pygame.display.set_mode(
-                        (self.display_height, self.display_width), pygame.NOFRAME
-                    )
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:
+                        change_to_direction = Direction.DOWN
+                    elif event.key == pygame.K_LEFT:
+                        change_to_direction = Direction.LEFT
+                    elif event.key == pygame.K_RIGHT:
+                        change_to_direction = Direction.RIGHT
+                    elif event.key == pygame.K_UP:
+                        change_to_direction = Direction.UP
+                    elif event.key == pygame.K_SPACE:
+                        self.update_display = not self.update_display
+                    elif event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                    elif event.key == pygame.K_b:
+                        pygame.display.set_mode(
+                            (self.display_height, self.display_width), pygame.SHOWN
+                        )
+                    elif event.key == pygame.K_n:
+                        pygame.display.set_mode(
+                            (self.display_height, self.display_width), pygame.NOFRAME
+                        )
 
-        # Check if input makes you go back into yourself and prevent that
+        # Check if input makes snake go back into itself and prevent that
         if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
             self.direction = Direction.UP
         if change_to_direction == Direction.DOWN and self.direction != Direction.UP:
@@ -149,24 +188,25 @@ class SnakeGame:
             self._place_food()
 
     def _update_display(self):
-        self.display.fill(self.COLORS["BACKGROUND"])
+        self.display.fill(self.COLORS["background"])
 
         for coordinate in self.body:
             pygame.draw.rect(
                 self.display,
-                self.COLORS["FOREGROUND"],
+                self.COLORS["foreground"],
                 pygame.Rect(
                     coordinate.x, coordinate.y, self.BLOCK_SIZE, self.BLOCK_SIZE
                 ),
             )
 
-        pygame.draw.rect(
+        pygame.draw.circle(
             self.display,
-            self.COLORS["FOREGROUND"],
-            pygame.Rect(self.food.x, self.food.y, self.BLOCK_SIZE, self.BLOCK_SIZE),
+            self.COLORS["foreground"],
+            (self.food.x + self.BLOCK_SIZE / 2, self.food.y + self.BLOCK_SIZE / 2),
+            self.BLOCK_SIZE / 2,
         )
 
-        text = self.FONT.render(f"Score: {self.score}", True, self.COLORS["FOREGROUND"])
+        text = self.FONT.render(f"Score: {self.score}", True, self.COLORS["foreground"])
         self.display.blit(text, [16, 16])
         pygame.display.flip()
 
