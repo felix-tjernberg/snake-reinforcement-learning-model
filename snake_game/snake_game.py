@@ -1,6 +1,17 @@
-from snake_helper_classes import Coordinate, Direction
 import pygame
 from random import randint
+from enum import Enum
+from collections import namedtuple
+
+
+Coordinate = namedtuple("Coordinate", "x, y")
+
+
+class Direction(Enum):
+    RIGHT = 0
+    LEFT = 1
+    UP = 2
+    DOWN = 3
 
 
 class SnakeGame:
@@ -101,6 +112,7 @@ class SnakeGame:
                         (self.display_height, self.display_width), pygame.NOFRAME
                     )
 
+        # Check if input makes you go back into yourself and prevent that
         if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
             self.direction = Direction.UP
         if change_to_direction == Direction.DOWN and self.direction != Direction.UP:
