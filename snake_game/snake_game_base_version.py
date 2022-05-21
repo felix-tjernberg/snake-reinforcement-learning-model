@@ -48,6 +48,7 @@ class SnakeGame:
         self._place_food()
 
     def game_tick(self):
+        self._get_user_input()
         self._move_snake()
 
         self._check_collision()
@@ -58,7 +59,6 @@ class SnakeGame:
         self._update_display()
         self.clock.tick(self.GAME_SPEED)
 
-        self._get_user_input()
         return self.game_over, self.score
 
     def _check_collision(self):

@@ -65,7 +65,6 @@ class SnakeGame:
             self.clock.tick()
 
         self._check_agent_input()
-        return self.game_over
 
     def reset_game(self):
         self.agent_action = None
