@@ -16,16 +16,16 @@ class Direction(Enum):
 
 
 class SnakeGame:
-    BLOCK_SIZE = 20  # Snake body, head and food size
+    BLOCK_SIZE = 10  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
     GAME_SPEED = 10  # Changes game difficulty for humans ;)
 
     def __init__(
         self,
         *,
-        display_height=480,
+        display_height=420,
         display_ui=True,
-        display_width=480,
+        display_width=420,
     ):
         pygame.init()
         self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
@@ -56,7 +56,6 @@ class SnakeGame:
 
     def game_tick(self):
         self._move_snake()
-        self.body.insert(0, self.head)
         self._check_collision()
 
         if self.display_ui:
@@ -133,6 +132,7 @@ class SnakeGame:
         elif self.direction == Direction.DOWN:
             y += self.BLOCK_SIZE
         self.head = Coordinate(x, y)
+        self.body.insert(0, self.head)
 
     def _place_food(self):
         x = (
