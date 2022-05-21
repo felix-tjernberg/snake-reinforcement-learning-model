@@ -16,8 +16,8 @@ class Direction(Enum):
 
 
 class SnekGame:
-    BLOCK_SIZE = 10  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
+    GRID_SIZE = 10  # Snake body, head and food size
     GAME_SPEED = 30  # Agents can play fast :)
 
     def __init__(
@@ -49,8 +49,8 @@ class SnekGame:
         self.head = Coordinate(self.display_height / 2, self.display_width / 2)
         self.body = [
             self.head,
-            Coordinate(self.head.x - self.BLOCK_SIZE, self.head.y),
-            Coordinate(self.head.x - self.BLOCK_SIZE * 2, self.head.y),
+            Coordinate(self.head.x - self.GRID_SIZE, self.head.y),
+            Coordinate(self.head.x - self.GRID_SIZE * 2, self.head.y),
         ]
         self._place_food()
 
@@ -73,8 +73,8 @@ class SnekGame:
         self.head = Coordinate(self.display_height / 2, self.display_width / 2)
         self.body = [
             self.head,
-            Coordinate(self.head.x - self.BLOCK_SIZE, self.head.y),
-            Coordinate(self.head.x - self.BLOCK_SIZE * 2, self.head.y),
+            Coordinate(self.head.x - self.GRID_SIZE, self.head.y),
+            Coordinate(self.head.x - self.GRID_SIZE * 2, self.head.y),
         ]
         self._place_food()
 
@@ -101,9 +101,9 @@ class SnekGame:
 
     def _check_collision(self):
         if (
-            self.head.x > self.display_width - self.BLOCK_SIZE
+            self.head.x > self.display_width - self.GRID_SIZE
             or self.head.x < 0
-            or self.head.y > self.display_height - self.BLOCK_SIZE
+            or self.head.y > self.display_height - self.GRID_SIZE
             or self.head.y < 0
             or self.head in self.body[1:]
         ):
@@ -122,24 +122,24 @@ class SnekGame:
         x = self.head.x
         y = self.head.y
         if self.direction == Direction.RIGHT:
-            x += self.BLOCK_SIZE
+            x += self.GRID_SIZE
         elif self.direction == Direction.LEFT:
-            x -= self.BLOCK_SIZE
+            x -= self.GRID_SIZE
         elif self.direction == Direction.UP:
-            y -= self.BLOCK_SIZE
+            y -= self.GRID_SIZE
         elif self.direction == Direction.DOWN:
-            y += self.BLOCK_SIZE
+            y += self.GRID_SIZE
         self.head = Coordinate(x, y)
         self.body.insert(0, self.head)
 
     def _place_food(self):
         x = (
-            randint(0, (self.display_height - self.BLOCK_SIZE) // self.BLOCK_SIZE)
-            * self.BLOCK_SIZE
+            randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE)
+            * self.GRID_SIZE
         )
         y = (
-            randint(0, (self.display_width - self.BLOCK_SIZE) // self.BLOCK_SIZE)
-            * self.BLOCK_SIZE
+            randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE)
+            * self.GRID_SIZE
         )
         self.food = Coordinate(x, y)
         if self.food in self.body:
@@ -152,16 +152,14 @@ class SnekGame:
             pygame.draw.rect(
                 self.display,
                 self.COLORS["foreground"],
-                pygame.Rect(
-                    coordinate.x, coordinate.y, self.BLOCK_SIZE, self.BLOCK_SIZE
-                ),
+                pygame.Rect(coordinate.x, coordinate.y, self.GRID_SIZE, self.GRID_SIZE),
             )
 
         pygame.draw.circle(
             self.display,
             self.COLORS["foreground"],
-            (self.food.x + self.BLOCK_SIZE / 2, self.food.y + self.BLOCK_SIZE / 2),
-            self.BLOCK_SIZE / 2,
+            (self.food.x + self.GRID_SIZE / 2, self.food.y + self.GRID_SIZE / 2),
+            self.GRID_SIZE / 2,
         )
 
         pygame.display.flip()
