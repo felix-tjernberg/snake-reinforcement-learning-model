@@ -14,15 +14,14 @@ class Direction(Enum):
     DOWN = 3
 
 
-class SnakeGame:
+class SnekGame:
     BLOCK_SIZE = 10  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
     GAME_SPEED = 10  # Changes game difficulty for humans ;)
 
     def __init__(self, display_height=420, display_width=420):
         pygame.init()
-        pygame.display.set_caption("Maskjävel")
-        self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
+        pygame.display.set_caption("snek_game")
 
         # User Interface
         self.display_border = False
@@ -38,6 +37,7 @@ class SnakeGame:
         self.game_over = False
         self.food = None
         self.score = 0
+        self.quit_game = False
 
         self.head = Coordinate(self.display_height / 2, self.display_width / 2)
         self.body = [
@@ -48,17 +48,16 @@ class SnakeGame:
         self._place_food()
 
     def game_tick(self):
-        self._get_user_input()
         self._move_snake()
-
         self._check_collision()
-        if self.game_over:
+        if self.game_over or self.quit_game:
             pygame.quit()
             return self.game_over, self.score
 
         self._update_display()
         self.clock.tick(self.GAME_SPEED)
 
+        self._get_user_input()
         return self.game_over, self.score
 
     def _check_collision(self):
@@ -84,7 +83,7 @@ class SnakeGame:
         change_to_direction = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                self.quit_game = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
                     change_to_direction = Direction.DOWN
@@ -95,7 +94,7 @@ class SnakeGame:
                 elif event.key == pygame.K_UP:
                     change_to_direction = Direction.UP
                 elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
+                    self.quit_game = True
                 elif event.key == pygame.K_b:
                     pygame.display.set_mode(
                         (self.display_height, self.display_width), pygame.SHOWN
@@ -161,13 +160,11 @@ class SnakeGame:
             self.BLOCK_SIZE / 2,
         )
 
-        text = self.FONT.render(f"Score: {self.score}", True, self.COLORS["foreground"])
-        self.display.blit(text, [16, 16])
         pygame.display.flip()
 
 
 if __name__ == "__main__":
-    snake_game_instance = SnakeGame()
+    snake_game_instance = SnekGame()
 
     while True:
         game_over, score = snake_game_instance.game_tick()

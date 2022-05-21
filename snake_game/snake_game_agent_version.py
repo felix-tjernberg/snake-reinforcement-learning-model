@@ -15,10 +15,10 @@ class Direction(Enum):
     DOWN = 3
 
 
-class SnakeGame:
+class SnekGame:
     BLOCK_SIZE = 10  # Snake body, head and food size
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
-    GAME_SPEED = 10  # Changes game difficulty for humans ;)
+    GAME_SPEED = 30  # Agents can play fast :)
 
     def __init__(
         self,
@@ -28,7 +28,7 @@ class SnakeGame:
         display_width=420,
     ):
         pygame.init()
-        self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
+        pygame.display.set_caption("snek_game")
 
         # User Interface
         self.display_height = display_height
@@ -164,13 +164,11 @@ class SnakeGame:
             self.BLOCK_SIZE / 2,
         )
 
-        text = self.FONT.render(f"Score: {self.score}", True, self.COLORS["foreground"])
-        self.display.blit(text, [16, 16])
         pygame.display.flip()
 
 
 if __name__ == "__main__":
-    snake_game_instance = SnakeGame()
+    snake_game_instance = SnekGame()
 
     snake_game_instance.game_tick()
     snake_game_instance.agent_action = Direction.DOWN
