@@ -1,3 +1,13 @@
 {
+  "cSpell.words": [
+    "blit",
+    "doublecheckenv",
+    "KEYDOWN",
+    "NOFRAME",
+    "pygame",
+    "sentdex",
+    "tensorboard",
+    "timesteps"
+  ],
   "python.formatting.blackArgs": ["--line-length", "120"]
 }
