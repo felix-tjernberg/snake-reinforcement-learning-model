@@ -3,6 +3,7 @@
     "blit",
     "doublecheckenv",
     "KEYDOWN",
+    "logdir",
     "NOFRAME",
     "pygame",
     "sentdex",
