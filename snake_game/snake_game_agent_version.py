@@ -21,6 +21,7 @@ class SnekGame:
     ):
         pygame.init()
         pygame.display.set_caption("snek_game")
+        self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
 
         # User Interface
         self.display_height = display_height
@@ -151,6 +152,8 @@ class SnekGame:
             ),
             self.GRID_SIZE / 2,
         )
+
+        self.display.blit(self.FONT.render(f"Score: {self.score}", True, self.COLORS["foreground"]), [16, 16])
 
         pygame.display.flip()
 
