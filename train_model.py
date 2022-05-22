@@ -24,4 +24,4 @@ episode = 0  # Change this if you are continuing training a model
 while True:
     episode += 1
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"{model_name}")
-    model.save(f"{models_directory}/{TIMESTEPS*episode}")
+    model.save(f"{models_directory}/{model_name}_{TIMESTEPS*episode}")
