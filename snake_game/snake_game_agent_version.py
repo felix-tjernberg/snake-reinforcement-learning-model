@@ -1,6 +1,5 @@
 import pygame
 from random import randint
-from enum import Enum
 from collections import namedtuple
 from time import sleep
 
@@ -8,15 +7,9 @@ from time import sleep
 Coordinate = namedtuple("Coordinate", "x, y")
 
 
-class Direction(Enum):
-    RIGHT = 0
-    LEFT = 1
-    UP = 2
-    DOWN = 3
-
-
 class SnekGame:
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
+    DIRECTION = {"down": 0, "right": 1, "left": 2, "up": 3}
     GRID_SIZE = 10  # Snake body, head and food size
     GAME_SPEED = 30  # Agents can play fast :)
 
@@ -24,7 +17,6 @@ class SnekGame:
         self,
         *,
         display_height=420,
-        display_ui=True,
         display_width=420,
     ):
         pygame.init()
@@ -32,7 +24,7 @@ class SnekGame:
 
         # User Interface
         self.display_height = display_height
-        self.display_ui = display_ui
+        self.display_ui = False
         self.display_width = display_width
         self.display = pygame.display.set_mode(
             (self.display_height, self.display_width), pygame.NOFRAME
@@ -41,7 +33,7 @@ class SnekGame:
         # Game State
         self.agent_action = None
         self.clock = pygame.time.Clock()
-        self.direction = Direction.RIGHT
+        self.direction = self.DIRECTION["right"]
         self.game_over = False
         self.food = None
         self.score = 0
@@ -67,7 +59,7 @@ class SnekGame:
 
     def reset_game(self):
         self.agent_action = None
-        self.direction = Direction.RIGHT
+        self.direction = self.DIRECTION["right"]
         self.game_over = False
         self.score = 0
         self.head = Coordinate(self.display_height / 2, self.display_width / 2)
@@ -78,26 +70,41 @@ class SnekGame:
         ]
         self._place_food()
 
+    def quit_game():
+        pygame.quit()
+
     def _check_agent_input(self):
         change_to_direction = None
-        if self.agent_action == Direction.DOWN:
-            change_to_direction = Direction.DOWN
-        elif self.agent_action == Direction.LEFT:
-            change_to_direction = Direction.LEFT
-        elif self.agent_action == Direction.RIGHT:
-            change_to_direction = Direction.RIGHT
-        elif self.agent_action == Direction.UP:
-            change_to_direction = Direction.UP
+        if self.agent_action == self.DIRECTION["down"]:
+            change_to_direction = self.DIRECTION["down"]
+        elif self.agent_action == self.DIRECTION["left"]:
+            change_to_direction = self.DIRECTION["left"]
+        elif self.agent_action == self.DIRECTION["right"]:
+            change_to_direction = self.DIRECTION["right"]
+        elif self.agent_action == self.DIRECTION["up"]:
+            change_to_direction = self.DIRECTION["up"]
 
         # Check if input makes snake go back into itself and prevent that
-        if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
-            self.direction = Direction.UP
-        if change_to_direction == Direction.DOWN and self.direction != Direction.UP:
-            self.direction = Direction.DOWN
-        if change_to_direction == Direction.LEFT and self.direction != Direction.RIGHT:
-            self.direction = Direction.LEFT
-        if change_to_direction == Direction.RIGHT and self.direction != Direction.LEFT:
-            self.direction = Direction.RIGHT
+        if (
+            change_to_direction == self.DIRECTION["up"]
+            and self.direction != self.DIRECTION["down"]
+        ):
+            self.direction = self.DIRECTION["up"]
+        if (
+            change_to_direction == self.DIRECTION["down"]
+            and self.direction != self.DIRECTION["up"]
+        ):
+            self.direction = self.DIRECTION["down"]
+        if (
+            change_to_direction == self.DIRECTION["left"]
+            and self.direction != self.DIRECTION["right"]
+        ):
+            self.direction = self.DIRECTION["left"]
+        if (
+            change_to_direction == self.DIRECTION["right"]
+            and self.direction != self.DIRECTION["left"]
+        ):
+            self.direction = self.DIRECTION["right"]
 
     def _check_collision(self):
         if (
@@ -121,13 +128,13 @@ class SnekGame:
     def _move_snake(self):
         x = self.head.x
         y = self.head.y
-        if self.direction == Direction.RIGHT:
+        if self.direction == self.DIRECTION["right"]:
             x += self.GRID_SIZE
-        elif self.direction == Direction.LEFT:
+        elif self.direction == self.DIRECTION["left"]:
             x -= self.GRID_SIZE
-        elif self.direction == Direction.UP:
+        elif self.direction == self.DIRECTION["up"]:
             y -= self.GRID_SIZE
-        elif self.direction == Direction.DOWN:
+        elif self.direction == self.DIRECTION["down"]:
             y += self.GRID_SIZE
         self.head = Coordinate(x, y)
         self.body.insert(0, self.head)
@@ -169,11 +176,11 @@ if __name__ == "__main__":
     snake_game_instance = SnekGame()
 
     snake_game_instance.game_tick()
-    snake_game_instance.agent_action = Direction.DOWN
+    snake_game_instance.agent_action = snake_game_instance.DIRECTION["down"]
     snake_game_instance.game_tick()
-    snake_game_instance.agent_action = Direction.LEFT
+    snake_game_instance.agent_action = snake_game_instance.DIRECTION["left"]
     snake_game_instance.game_tick()
-    snake_game_instance.agent_action = Direction.UP
+    snake_game_instance.agent_action = snake_game_instance.DIRECTION["up"]
     snake_game_instance.game_tick()
     sleep(2)
     snake_game_instance.reset_game()
