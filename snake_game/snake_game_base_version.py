@@ -27,9 +27,7 @@ class SnekGame:
         self.display_border = False
         self.display_height = display_height
         self.display_width = display_width
-        self.display = pygame.display.set_mode(
-            (self.display_height, self.display_width), pygame.NOFRAME
-        )
+        self.display = pygame.display.set_mode((self.display_height, self.display_width), pygame.NOFRAME)
 
         # Game State
         self.clock = pygame.time.Clock()
@@ -96,13 +94,9 @@ class SnekGame:
                 elif event.key == pygame.K_ESCAPE:
                     self.quit_game = True
                 elif event.key == pygame.K_b:
-                    pygame.display.set_mode(
-                        (self.display_height, self.display_width), pygame.SHOWN
-                    )
+                    pygame.display.set_mode((self.display_height, self.display_width), pygame.SHOWN)
                 elif event.key == pygame.K_n:
-                    pygame.display.set_mode(
-                        (self.display_height, self.display_width), pygame.NOFRAME
-                    )
+                    pygame.display.set_mode((self.display_height, self.display_width), pygame.NOFRAME)
 
         # Check if input makes snake go back into itself and prevent that
         if change_to_direction == Direction.UP and self.direction != Direction.DOWN:
@@ -129,14 +123,8 @@ class SnekGame:
         self.body.insert(0, self.head)
 
     def _place_food(self):
-        x = (
-            randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE)
-            * self.GRID_SIZE
-        )
-        y = (
-            randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE)
-            * self.GRID_SIZE
-        )
+        x = randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
+        y = randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         self.food = Coordinate(x, y)
         if self.food in self.body:
             self._place_food()

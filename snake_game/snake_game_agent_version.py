@@ -26,9 +26,7 @@ class SnekGame:
         self.display_height = display_height
         self.display_ui = False
         self.display_width = display_width
-        self.display = pygame.display.set_mode(
-            (self.display_height, self.display_width), pygame.NOFRAME
-        )
+        self.display = pygame.display.set_mode((self.display_height, self.display_width), pygame.NOFRAME)
 
         # Game State
         self.agent_action = None
@@ -85,25 +83,13 @@ class SnekGame:
             change_to_direction = self.DIRECTION["up"]
 
         # Check if input makes snake go back into itself and prevent that
-        if (
-            change_to_direction == self.DIRECTION["up"]
-            and self.direction != self.DIRECTION["down"]
-        ):
+        if change_to_direction == self.DIRECTION["up"] and self.direction != self.DIRECTION["down"]:
             self.direction = self.DIRECTION["up"]
-        if (
-            change_to_direction == self.DIRECTION["down"]
-            and self.direction != self.DIRECTION["up"]
-        ):
+        if change_to_direction == self.DIRECTION["down"] and self.direction != self.DIRECTION["up"]:
             self.direction = self.DIRECTION["down"]
-        if (
-            change_to_direction == self.DIRECTION["left"]
-            and self.direction != self.DIRECTION["right"]
-        ):
+        if change_to_direction == self.DIRECTION["left"] and self.direction != self.DIRECTION["right"]:
             self.direction = self.DIRECTION["left"]
-        if (
-            change_to_direction == self.DIRECTION["right"]
-            and self.direction != self.DIRECTION["left"]
-        ):
+        if change_to_direction == self.DIRECTION["right"] and self.direction != self.DIRECTION["left"]:
             self.direction = self.DIRECTION["right"]
 
     def _check_collision(self):
@@ -140,14 +126,8 @@ class SnekGame:
         self.body.insert(0, self.head)
 
     def _place_food(self):
-        x = (
-            randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE)
-            * self.GRID_SIZE
-        )
-        y = (
-            randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE)
-            * self.GRID_SIZE
-        )
+        x = randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
+        y = randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         self.food = Coordinate(x, y)
         if self.food in self.body:
             self._place_food()
@@ -165,7 +145,10 @@ class SnekGame:
         pygame.draw.circle(
             self.display,
             self.COLORS["foreground"],
-            (self.food.x + self.GRID_SIZE / 2, self.food.y + self.GRID_SIZE / 2),
+            (
+                self.food.x + self.GRID_SIZE / 2,
+                self.food.y + self.GRID_SIZE / 2,
+            ),
             self.GRID_SIZE / 2,
         )
 
