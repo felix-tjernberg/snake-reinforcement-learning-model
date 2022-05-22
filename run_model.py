@@ -1,4 +1,3 @@
-from msilib.schema import Environment
 from snake_gym_environment import SnakeGymEnvironment
 from stable_baselines3 import PPO
 
