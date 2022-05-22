@@ -11,7 +11,7 @@ class SnekGame:
     COLORS = {"background": (154, 197, 2), "foreground": (1, 2, 0)}
     DIRECTION = {"down": 0, "right": 1, "left": 2, "up": 3}
     GRID_SIZE = 10  # Snake body, head and food size
-    GAME_SPEED = 30  # Agents can play fast :)
+    GAME_SPEED = 144  # Agents can play fast :)
 
     def __init__(
         self,
