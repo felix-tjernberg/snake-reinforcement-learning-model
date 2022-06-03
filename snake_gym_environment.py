@@ -1,6 +1,6 @@
 from gym import spaces, Env
-from snake_game.snake_game_agent_version import SnekGame
 from numpy import array, float32, inf
+from snake_game.snake_game_agent_version import SnekGame
 
 
 class SnakeGymEnvironment(Env):
