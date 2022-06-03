@@ -69,7 +69,7 @@ class SnekGame:
         ]
         self._place_food()
 
-    def quit_game():
+    def quit_game(self):
         pygame.quit()
 
     def _check_agent_input(self):
