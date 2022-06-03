@@ -158,30 +158,17 @@ class SnekGame:
         pygame.display.flip()
 
 
-from math import sqrt
-
-
-def euclidean_distance(coordinate_one: Coordinate, coordinate_two: Coordinate):
-    """Takes two coordinates and returns the euclidean distance between them"""
-    return sqrt((coordinate_one.x - coordinate_two.x) ** 2 + (coordinate_one.y - coordinate_two.y) ** 2)
-
-
 if __name__ == "__main__":
     snake_game_instance = SnekGame()
 
     snake_game_instance.game_tick()
-    print(euclidean_distance(snake_game_instance.head, snake_game_instance.food))
     snake_game_instance.agent_action = snake_game_instance.DIRECTION["down"]
     snake_game_instance.game_tick()
-    print(euclidean_distance(snake_game_instance.head, snake_game_instance.food))
     snake_game_instance.agent_action = snake_game_instance.DIRECTION["left"]
     snake_game_instance.game_tick()
-    print(euclidean_distance(snake_game_instance.head, snake_game_instance.food))
     snake_game_instance.agent_action = snake_game_instance.DIRECTION["up"]
     snake_game_instance.game_tick()
-    print(euclidean_distance(snake_game_instance.head, snake_game_instance.food))
     sleep(2)
     snake_game_instance.reset_game()
     snake_game_instance.game_tick()
-    print(euclidean_distance(snake_game_instance.head, snake_game_instance.food))
     sleep(2)
