@@ -5,7 +5,7 @@ import time
 import os
 
 start_time = int(time.time())
-model_name = f"PPO_v1_{start_time}"
+model_name = f"PPO_v2_{start_time}"
 log_directory = f"logs/"
 models_directory = f"models/train_sessions/{model_name}/"
 if not os.path.exists(models_directory):

@@ -4,9 +4,10 @@ from stable_baselines3 import PPO
 environment = SnakeGymEnvironment()
 environment.render()
 
-ppo_model_path = f"models/saved_models/PPO_v1_1653236185_960000"
+ppo_model_path = f"models/saved_models/PPO_v2_1654532675_6440000"
 loaded_PPO_model = PPO.load(ppo_model_path, environment)
 
+environment.snake_game.GAME_SPEED = 30
 for episode in range(10):
     observation = environment.reset()
     done = False
