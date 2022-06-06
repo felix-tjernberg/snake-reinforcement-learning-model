@@ -46,6 +46,8 @@ class SnekGame:
         self._place_food()
 
     def game_tick(self):
+        pygame.event.pump()
+
         self._check_agent_input()
         self._move_snake()
         self._check_collision()
