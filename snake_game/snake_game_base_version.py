@@ -29,20 +29,23 @@ class SnekGame:
         self.display_width = display_width
         self.display = pygame.display.set_mode((self.display_height, self.display_width), pygame.NOFRAME)
 
-        # Game State
-        self.clock = pygame.time.Clock()
-        self.direction = Direction.RIGHT
-        self.game_over = False
-        self.food = None
-        self.score = 0
-        self.quit_game = False
-
-        self.head = Coordinate(self.display_height / 2, self.display_width / 2)
+        # Snake and Food
+        self.head = Coordinate(self.display_height // 2, self.display_width // 2)
         self.body = [
             self.head,
             Coordinate(self.head.x - self.GRID_SIZE, self.head.y),
             Coordinate(self.head.x - self.GRID_SIZE * 2, self.head.y),
         ]
+        self.direction = Direction.RIGHT
+        self.food = None
+
+        # Game Info
+        self.clock = pygame.time.Clock()
+        self.game_over = False
+        self.max_score = ((display_height // self.GRID_SIZE) * (display_width // self.GRID_SIZE)) - len(self.body)
+        self.score = 0
+        self.quit_game = False
+
         self._place_food()
 
     def game_tick(self):
@@ -123,6 +126,10 @@ class SnekGame:
         self.body.insert(0, self.head)
 
     def _place_food(self):
+        if self.score == self.max_score:
+            self.game_over = True
+            return
+
         x = randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         y = randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         self.food = Coordinate(x, y)
@@ -156,4 +163,10 @@ if __name__ == "__main__":
         game_over, score = snake_game_instance.game_tick()
         if game_over:
             break
-    print(f"Score: {score}")
+
+    if snake_game_instance.score == snake_game_instance.max_score:
+        print("You won!")
+        print(f"Final Score: {score}")
+    else:
+        print("You lost!")
+        print(f"Final Score: {score}")

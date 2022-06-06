@@ -62,7 +62,7 @@ class SnakeGymEnvironment(Env):
 
     def render(self, mode="real_time"):
         if mode == "real_time":
-            self.snake_game.display_ui = True
+            self.snake_game.display_update = True
 
     def close(self):
         self.snake_game.quit_game()

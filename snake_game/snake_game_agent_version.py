@@ -21,29 +21,13 @@ class SnekGame:
     ):
         pygame.init()
         pygame.display.set_caption("snek_game")
-        self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
-
-        # User Interface
+        self.clock = pygame.time.Clock()
         self.display_height = display_height
-        self.display_ui = False
+        self.display_update = False
         self.display_width = display_width
         self.display = pygame.display.set_mode((self.display_height, self.display_width), pygame.NOFRAME)
-
-        # Game State
-        self.agent_action = None
-        self.clock = pygame.time.Clock()
-        self.direction = self.DIRECTION["right"]
-        self.game_over = False
-        self.food = None
-        self.score = 0
-
-        self.head = Coordinate(self.display_height / 2, self.display_width / 2)
-        self.body = [
-            self.head,
-            Coordinate(self.head.x - self.GRID_SIZE, self.head.y),
-            Coordinate(self.head.x - self.GRID_SIZE * 2, self.head.y),
-        ]
-        self._place_food()
+        self.FONT = pygame.font.Font("./snake_game/8bit.ttf", 32)
+        self.reset_game()
 
     def game_tick(self):
         pygame.event.pump()
@@ -52,23 +36,29 @@ class SnekGame:
         self._move_snake()
         self._check_collision()
 
-        if self.display_ui:
+        if self.display_update:
             self._update_display()
             self.clock.tick(self.GAME_SPEED)
         else:
             self.clock.tick()
 
     def reset_game(self):
+        # Game Info
         self.agent_action = None
         self.direction = self.DIRECTION["right"]
         self.game_over = False
         self.score = 0
-        self.head = Coordinate(self.display_height / 2, self.display_width / 2)
+
+        # Snake and Food
+        grid_size = self.GRID_SIZE
+        self.head = Coordinate(self.display_height // 2, self.display_width // 2)
         self.body = [
             self.head,
-            Coordinate(self.head.x - self.GRID_SIZE, self.head.y),
-            Coordinate(self.head.x - self.GRID_SIZE * 2, self.head.y),
+            Coordinate(self.head.x - grid_size, self.head.y),
+            Coordinate(self.head.x - grid_size * 2, self.head.y),
         ]
+        self.max_score = ((self.display_height // grid_size) * (self.display_width // grid_size)) - len(self.body)
+
         self._place_food()
 
     def quit_game(self):
@@ -129,6 +119,10 @@ class SnekGame:
         self.body.insert(0, self.head)
 
     def _place_food(self):
+        if self.score == self.max_score:
+            self.game_over = True
+            return
+
         x = randint(0, (self.display_height - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         y = randint(0, (self.display_width - self.GRID_SIZE) // self.GRID_SIZE) * self.GRID_SIZE
         self.food = Coordinate(x, y)
