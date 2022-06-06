@@ -1,6 +1,7 @@
 from gym import spaces, Env
 from numpy import array, float32, inf
 from snake_game.snake_game_agent_version import SnekGame
+from stable_baselines3.common.callbacks import BaseCallback
 
 
 class SnakeGymEnvironment(Env):
@@ -27,10 +28,10 @@ class SnakeGymEnvironment(Env):
             self.reward = self.snake_game.score
 
         return (
-            self.observe_game_state(),  # Observation
+            self.observe_game_state(),  # Observation array
             self.reward,
             self.snake_game.game_over,  # If the episode is done
-            {},  # We have to at least send a empty dictionary for as info
+            {"game_score": self.snake_game.score},  # Infos object
         )
 
     def reset(self):
@@ -64,3 +65,16 @@ class SnakeGymEnvironment(Env):
 
     def close(self):
         self.snake_game.quit_game()
+
+
+class SnakeGymEnvironmentCallback(BaseCallback):
+    """
+    Callback for recording game score in logger object
+    """
+
+    def __init__(self, verbose=0):
+        super(SnakeGymEnvironmentCallback, self).__init__(verbose)
+
+    def _on_step(self) -> bool:
+        self.logger.record("game_score", self.locals["infos"][0]["game_score"])
+        return True
