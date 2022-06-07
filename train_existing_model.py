@@ -6,7 +6,7 @@ import os
 
 start_time = int(time.time())
 model_name = f"PPO_v2_{start_time}"
-log_directory = f"logs/"
+log_directory = f"logs/train_sessions"
 models_directory = f"models/train_sessions/{model_name}/"
 if not os.path.exists(models_directory):
     os.makedirs(models_directory)
@@ -15,17 +15,18 @@ if not os.path.exists(log_directory):
 
 environment = SnakeGymEnvironment()
 environment.reset()
-model = PPO("MlpPolicy", environment, verbose=1, tensorboard_log=log_directory)
 
-TIMESTEPS = 10000
-episode = 0  # Change this if you are continuing training a model
-# for episode in range(100):
+model_path = f"models/saved_models/PPO_v2_1654588851_40760000"
+loaded_model = PPO.load(model_path, environment)
+
+TIMESTEPS = 100000
+episode = 4076  # 4076 * 10000 = 40760000
 while True:
     episode += 1
-    model.learn(
+    loaded_model.learn(
         total_timesteps=TIMESTEPS,
         reset_num_timesteps=False,
         tb_log_name=f"{model_name}",
         callback=SnakeGymEnvironmentCallback(),
     )
-    model.save(f"{models_directory}/{model_name}_{TIMESTEPS*episode}")
+    loaded_model.save(f"{models_directory}/{model_name}_{TIMESTEPS*episode}")

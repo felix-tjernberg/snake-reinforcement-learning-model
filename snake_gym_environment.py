@@ -22,6 +22,7 @@ class SnakeGymEnvironment(Env):
         self.snake_game.agent_action = action
         self.snake_game.game_tick()
         self.amount_of_steps_taken_between_foods += 1
+        self.total_steps_taken += 1
 
         # Reward agent for getting closer to the food
         current_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
@@ -33,6 +34,7 @@ class SnakeGymEnvironment(Env):
         # Reward agent for eating food and reset amount of steps taken
         if self.snake_game.score > self.previous_score:
             self.reward += 100
+            self.reward += self.max_amount_of_steps_allowed_between_foods - self.amount_of_steps_taken_between_foods
             self.amount_of_steps_taken_between_foods = 0
         self.previous_score = self.snake_game.score
 
@@ -63,6 +65,7 @@ class SnakeGymEnvironment(Env):
         self.amount_of_steps_taken_between_foods = 0
         self.max_amount_of_steps_allowed_between_foods = self.snake_game.max_score
         self.previous_score = self.snake_game.score
+        self.total_steps_taken = 0
 
         return self.observe_game_state()  # In reset we only return the observation
 

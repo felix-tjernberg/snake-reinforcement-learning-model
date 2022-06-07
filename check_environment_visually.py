@@ -12,6 +12,7 @@ environment.snake_game.GAME_SPEED = 1
 # Test eat food reward and 10 random actions
 environment.snake_game.food = Coordinate((environment.snake_game.head.x + 10), environment.snake_game.head.y)
 _, reward, done, _ = environment.step(environment.snake_game.DIRECTION["right"])
+print("reward eating food", reward)
 for _ in range(10):
     random_action = environment.action_space.sample()
     # print("action", random_action)
