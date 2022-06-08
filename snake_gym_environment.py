@@ -2,7 +2,7 @@ from gym import spaces, Env
 from numpy import array, float32, inf
 from snake_game.snake_game_agent_version import SnekGame
 from stable_baselines3.common.callbacks import BaseCallback
-from snake_gym_environment_helper_functions import manhattan_distance
+from snake_gym_environment_helper_functions import inverse_percentage, manhattan_distance
 
 
 class SnakeGymEnvironment(Env):
@@ -21,7 +21,7 @@ class SnakeGymEnvironment(Env):
     def step(self, action):
         self.snake_game.agent_action = action
         self.snake_game.game_tick()
-        self.amount_of_steps_taken_between_foods += 1
+        self.steps_taken_between_foods += 1
         self.total_steps_taken += 1
 
         # Reward agent for getting closer to the food
@@ -31,11 +31,13 @@ class SnakeGymEnvironment(Env):
                 self.reward += 1
                 self.manhattan_distance_reward_list.append(current_manhattan_distance_to_food)
 
-        # Reward agent for eating food and reset amount of steps taken
+        # Reward agent for eating food and more if done quickly between foods
         if self.snake_game.score > self.previous_score:
-            self.reward += 100
-            self.reward += self.max_amount_of_steps_allowed_between_foods - self.amount_of_steps_taken_between_foods
-            self.amount_of_steps_taken_between_foods = 0
+            self.steps_taken_between_foods += 50
+            self.reward += pow(
+                50 * inverse_percentage(self.steps_taken_between_foods, self.max_allowed_steps_between_foods), 2
+            )
+            self.steps_taken_between_foods = 0
         self.previous_score = self.snake_game.score
 
         # Punish agent for eating itself
@@ -43,8 +45,8 @@ class SnakeGymEnvironment(Env):
             if self.snake_game.head in self.snake_game.body[1:]:
                 self.reward -= 100
 
-        # Punish agent for not moving fast enough between foods
-        if self.amount_of_steps_taken_between_foods == self.max_amount_of_steps_allowed_between_foods:
+        # End game and punish agent for not moving fast enough between foods
+        if self.steps_taken_between_foods == self.max_allowed_steps_between_foods:
             self.reward -= 1000
             self.snake_game.game_over = True
 
@@ -62,8 +64,8 @@ class SnakeGymEnvironment(Env):
         self.manhattan_distance_reward_list = []
         self.first_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
 
-        self.amount_of_steps_taken_between_foods = 0
-        self.max_amount_of_steps_allowed_between_foods = self.snake_game.max_score
+        self.steps_taken_between_foods = 0
+        self.max_allowed_steps_between_foods = self.snake_game.max_score
         self.previous_score = self.snake_game.score
         self.total_steps_taken = 0
 
@@ -81,7 +83,7 @@ class SnakeGymEnvironment(Env):
                 food_delta_x,
                 food_delta_y,
                 len(self.snake_game.body),
-                self.amount_of_steps_taken_between_foods,
+                self.steps_taken_between_foods,
             ],
             dtype=float32,
         )

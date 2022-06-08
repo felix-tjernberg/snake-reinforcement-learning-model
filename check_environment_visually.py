@@ -39,7 +39,7 @@ print("reward kill self", reward)
 # Test max steps punishment
 environment.reset()
 environment.snake_game.GAME_SPEED = 300
-while environment.amount_of_steps_taken_between_foods < environment.max_amount_of_steps_allowed_between_foods:
+while environment.steps_taken_between_foods < environment.max_allowed_steps_between_foods:
     environment.step(environment.snake_game.DIRECTION["down"])
     environment.step(environment.snake_game.DIRECTION["left"])
     environment.step(environment.snake_game.DIRECTION["up"])
