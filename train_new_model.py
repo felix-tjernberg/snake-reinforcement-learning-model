@@ -12,7 +12,7 @@ model_number = 1
 
 
 start_time = int(time.time())
-model_name = f"{model_name_prefix}_{start_time}_{model_number}"
+model_name = f"{model_name_prefix}_{model_number}_{start_time}"
 logs_directory = f"logs/train_sessions/"
 models_directory = f"models/train_sessions/{model_name}/"
 

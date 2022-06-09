@@ -16,7 +16,7 @@ saved_model_path = f"models/saved_models/{existing_model_name}"
 model_number = 1
 
 
-model_name = f"{new_model_prefix}_{start_time}_{model_number}"
+model_name = f"{model_name_prefix}_{model_number}_{start_time}"
 models_directory = f"models/train_sessions/{model_name}/"
 if not os.path.exists(models_directory):
     os.makedirs(models_directory)
