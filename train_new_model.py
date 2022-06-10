@@ -7,9 +7,9 @@ import os
 
 # Change these values before running script
 model_type = PPO
-model_name_prefix = "PPO_test"
-total_timesteps_per_episode = 100000
-model_number = 1
+model_name_prefix = "PPO_v3_keep_direction_reward"
+total_timesteps_per_episode = 1000000
+model_number = 3
 
 
 start_time = int(time.time())
