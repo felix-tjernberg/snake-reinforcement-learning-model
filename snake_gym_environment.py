@@ -17,6 +17,7 @@ class SnakeGymEnvironment(Env):
             dtype=float32,
         )
         self.snake_game = SnekGame()
+        self.high_score = 0
 
     def step(self, action):
         self.snake_game.agent_action = action
@@ -51,13 +52,15 @@ class SnakeGymEnvironment(Env):
             self.snake_game.game_over = True
 
         return (
-            self.observe_game_state(),  # Observation array
+            self.observe_game_state(),
             self.reward,
-            self.snake_game.game_over,  # If the episode is done
-            {"game_score": self.snake_game.score},  # Infos object
+            self.snake_game.game_over,
+            {"game_score": self.snake_game.score, "high_score": self.high_score},
         )
 
     def reset(self):
+        if self.snake_game.score > self.high_score:
+            self.high_score = self.snake_game.score
         self.reward = 0
         self.snake_game.reset_game()
 
@@ -69,7 +72,7 @@ class SnakeGymEnvironment(Env):
         self.previous_score = self.snake_game.score
         self.total_steps_taken = 0
 
-        return self.observe_game_state()  # In reset we only return the observation
+        return self.observe_game_state()
 
     def observe_game_state(self):
         snake_head = self.snake_game.head
@@ -106,4 +109,5 @@ class SnakeGymEnvironmentCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         self.logger.record("game_score", self.locals["infos"][0]["game_score"])
+        self.logger.record("high_score", self.locals["infos"][0]["high_score"])
         return True
