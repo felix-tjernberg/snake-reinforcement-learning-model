@@ -14,7 +14,7 @@ class SnakeGymEnvironment(Env):
             low=-inf,
             high=inf,
             # The observation shape is a one dimensional vector with 6 observations
-            shape=(6,),
+            shape=(7,),
             dtype=float32,
         )
         self.snake_game = SnekGame()
@@ -26,6 +26,11 @@ class SnakeGymEnvironment(Env):
         self.snake_game.game_tick()
         self.steps_taken_between_foods += 1
         self.total_steps_taken += 1
+
+        # Reward agent for keeping direction
+        if self.snake_game.direction == self.previous_direction:
+            self.reward += 0.1
+        self.previous_direction = self.snake_game.direction
 
         # Reward agent for getting closer to the food
         current_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
@@ -78,8 +83,10 @@ class SnakeGymEnvironment(Env):
 
         self.steps_taken_between_foods = 0
         self.max_allowed_steps_between_foods = self.snake_game.max_score
-        self.previous_score = self.snake_game.score
         self.total_steps_taken = 0
+
+        self.previous_score = self.snake_game.score
+        self.previous_direction = self.snake_game.direction
 
         return self.observe_game_state()
 
@@ -96,6 +103,7 @@ class SnakeGymEnvironment(Env):
                 food_delta_y,
                 len(self.snake_game.body),
                 self.steps_taken_between_foods,
+                self.previous_direction,
             ],
             dtype=float32,
         )
