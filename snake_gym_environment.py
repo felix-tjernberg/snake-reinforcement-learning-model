@@ -1,3 +1,4 @@
+from collections import deque
 from gym import spaces, Env
 from numpy import array, float32, inf
 from snake_game.snake_game_agent_version import SnekGame
@@ -18,6 +19,7 @@ class SnakeGymEnvironment(Env):
         )
         self.snake_game = SnekGame()
         self.high_score = 0
+        self.score_past_10_games = deque(maxlen=10)
 
     def step(self, action):
         self.snake_game.agent_action = action
@@ -55,12 +57,19 @@ class SnakeGymEnvironment(Env):
             self.observe_game_state(),
             self.reward,
             self.snake_game.game_over,
-            {"game_score": self.snake_game.score, "high_score": self.high_score},
+            {
+                "game_score": self.snake_game.score,
+                "high_score": self.high_score,
+                "lowest_score_past_10_games": min(self.score_past_10_games),
+                "highest_score_past_10_games": max(self.score_past_10_games),
+            },
         )
 
     def reset(self):
+        self.score_past_10_games.append(self.snake_game.score)
         if self.snake_game.score > self.high_score:
             self.high_score = self.snake_game.score
+
         self.reward = 0
         self.snake_game.reset_game()
 
@@ -100,14 +109,16 @@ class SnakeGymEnvironment(Env):
 
 
 class SnakeGymEnvironmentCallback(BaseCallback):
-    """
-    Callback for recording game score in logger object
-    """
-
     def __init__(self, verbose=0):
         super(SnakeGymEnvironmentCallback, self).__init__(verbose)
 
     def _on_step(self) -> bool:
-        self.logger.record("game_score", self.locals["infos"][0]["game_score"])
-        self.logger.record("high_score", self.locals["infos"][0]["high_score"])
+        self.logger.record(
+            "score_info/lowest_score_past_10_games", self.locals["infos"][0]["lowest_score_past_10_games"]
+        )
+        self.logger.record(
+            "score_info/highest_score_past_10_games", self.locals["infos"][0]["highest_score_past_10_games"]
+        )
+        self.logger.record("score_info/game_score", self.locals["infos"][0]["game_score"])
+        self.logger.record("score_info/high_score", self.locals["infos"][0]["high_score"])
         return True
