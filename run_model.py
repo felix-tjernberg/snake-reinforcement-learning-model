@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 
 environment = SnakeGymEnvironment()
 
-model_name = f"PPO_v3_non_linear_between_food_reward_1_1654770013_143770000"
+model_name = f"PPO_v3_keep_direction_reward_4_actions_3_1654867981_305_1000000"
 environment.snake_game.GAME_SPEED = 30
 
 model_path = f"models/saved_models/{model_name}"
