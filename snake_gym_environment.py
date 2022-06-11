@@ -3,7 +3,11 @@ from gym import spaces, Env
 from numpy import array, float32, inf
 from snake_game.snake_game_agent_version import SnekGame
 from stable_baselines3.common.callbacks import BaseCallback
-from snake_gym_environment_helper_functions import inverse_percentage, manhattan_distance
+from snake_gym_environment_helper_functions import (
+    append_coordinates_to_deque_in_float_form,
+    inverse_percentage,
+    manhattan_distance,
+)
 
 
 class SnakeGymEnvironment(Env):
@@ -13,17 +17,20 @@ class SnakeGymEnvironment(Env):
         self.observation_space = spaces.Box(
             low=-inf,
             high=inf,
-            # The observation shape is a one dimensional vector with 6 observations
-            shape=(7,),
+            shape=(1768,),
             dtype=float32,
         )
         self.snake_game = SnekGame()
         self.high_score = 0
         self.score_past_10_games = deque(maxlen=10)
+        self.previous_head_positions = deque(maxlen=1764)
+        for _ in range(1764):
+            self.previous_head_positions.append(0.0)
 
     def step(self, action):
         self.snake_game.agent_action = action
         self.snake_game.game_tick()
+        append_coordinates_to_deque_in_float_form(self.snake_game.head, self.previous_head_positions)
         self.steps_taken_between_foods += 1
         self.total_steps_taken += 1
 
@@ -82,7 +89,7 @@ class SnakeGymEnvironment(Env):
         self.first_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
 
         self.steps_taken_between_foods = 0
-        self.max_allowed_steps_between_foods = self.snake_game.max_score
+        self.max_allowed_steps_between_foods = 1764
         self.total_steps_taken = 0
 
         self.previous_score = self.snake_game.score
@@ -97,14 +104,13 @@ class SnakeGymEnvironment(Env):
         food_delta_y = snake_head.y - food.y
         return array(
             [
-                snake_head.x,
-                snake_head.y,
                 food_delta_x,
                 food_delta_y,
                 len(self.snake_game.body),
                 self.steps_taken_between_foods,
                 self.previous_direction,
-            ],
+            ]
+            + list(self.previous_head_positions),
             dtype=float32,
         )
 
