@@ -38,6 +38,6 @@ while True:
     if environment.scored_high_score:
         print(f"Model saved with a high score of {environment.high_score}")
         loaded_model.save(
-            f"{MODELS_DIRECTORY}/{MODEL_NAME}_{episode}_{TOTAL_TIMESTEPS_PER_EPISODE}_{environment.high_score}"
+            f"{MODELS_DIRECTORY}/{MODEL_NAME}_{episode}_{TOTAL_TIMESTEPS_PER_EPISODE}_{environment.high_score}.zip"
         )
         environment.scored_high_score = False
