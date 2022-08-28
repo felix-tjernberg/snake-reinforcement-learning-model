@@ -12,6 +12,9 @@ environment.step(environment.action_space.sample())
 environment.step(environment.action_space.sample())
 print(environment.previous_head_positions)
 
+# Test deque values are reset correctly
+environment.reset()
+print(environment.previous_head_positions)
 
 # Test keeping direction reward
 _, reward, _, _ = environment.step(environment.snake_game.DIRECTION["right"])

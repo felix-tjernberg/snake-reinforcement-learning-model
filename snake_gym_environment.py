@@ -11,20 +11,22 @@ from snake_gym_environment_helper_functions import (
 
 
 class SnakeGymEnvironment(Env):
+    MAX_SNAKE_LENGTH = 1764
+
     def __init__(self):
         super(SnakeGymEnvironment, self).__init__()
         self.action_space = spaces.Discrete(4)
         self.observation_space = spaces.Box(
-            low=-inf,
-            high=inf,
+            low=0,
+            high=1,
             shape=(1769,),
             dtype=float32,
         )
         self.snake_game = SnekGame()
         self.high_score = 0
         self.score_past_10_games = deque(maxlen=10)
-        self.previous_head_positions = deque(maxlen=1764)
-        for _ in range(1764):
+        self.previous_head_positions = deque(maxlen=self.MAX_SNAKE_LENGTH)
+        for _ in range(self.MAX_SNAKE_LENGTH):
             self.previous_head_positions.append(0.0)
 
     def step(self, action):
@@ -85,12 +87,14 @@ class SnakeGymEnvironment(Env):
 
         self.reward = 0
         self.snake_game.reset_game()
+        for _ in range(self.MAX_SNAKE_LENGTH):
+            self.previous_head_positions.append(0.0)
 
         self.manhattan_distance_reward_list = []
         self.first_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
 
         self.steps_taken_between_foods = 0
-        self.max_allowed_steps_between_foods = 1764
+        self.max_allowed_steps_between_foods = self.MAX_SNAKE_LENGTH
         self.total_steps_taken = 0
 
         self.previous_score = self.snake_game.score
