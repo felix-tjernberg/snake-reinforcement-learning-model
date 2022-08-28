@@ -17,6 +17,4 @@ for episode in range(1, 11):
         action, _ = loaded_model.predict(observation)
         observation, reward, done, info = environment.step(action)
     print(f"Episode {episode} finished with a score of {environment.snake_game.score}")
-    # print(f"Agent took {environment.steps_taken_between_foods} steps between last two foods")
-    # print(f"Agent took {environment.total_steps_taken} steps total")
 environment.close()

@@ -17,8 +17,8 @@ class SnakeGymEnvironment(Env):
         super(SnakeGymEnvironment, self).__init__()
         self.action_space = spaces.Discrete(4)
         self.observation_space = spaces.Box(
-            low=0,
-            high=1,
+            low=-inf,
+            high=inf,
             shape=(1769,),
             dtype=float32,
         )
