@@ -1,4 +1,4 @@
-from snake_gym_environment import SnakeGymEnvironment
+from snake_gym_environment_old import SnakeGymEnvironment
 from stable_baselines3 import PPO
 
 environment = SnakeGymEnvironment()

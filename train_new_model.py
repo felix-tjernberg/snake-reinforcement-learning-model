@@ -7,7 +7,7 @@ import os
 
 # Change these values before running script
 model_type = PPO
-model_name_prefix = "PPO_v3_keep_direction_reward_4_actions"
+model_name_prefix = "PPO_v4_head_position_1764_float_xy_observations"
 total_timesteps_per_episode = 1000000
 model_number = 1
 
