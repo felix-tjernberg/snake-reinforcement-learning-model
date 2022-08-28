@@ -6,33 +6,36 @@ import os
 
 
 # Change these values before running script
-model_name_prefix = "PPO_v4.2_head_position_1764_float_xy_observations"
-total_timesteps_per_episode = 1000000
-model_number = 3
+MODEL_NAME_PREFIX = "PPO_v4.2_head_position_1764_float_xy_observations"
+TOTAL_TIMESTEPS_PER_EPISODE = 100000
+MODEL_NUMBER = 4
 
 
-start_time = int(time.time())
-model_name = f"{model_name_prefix}_{model_number}_{start_time}"
-logs_directory = f"logs/train_sessions/"
-models_directory = f"models/train_sessions/{model_name}/"
-if not os.path.exists(models_directory):
-    os.makedirs(models_directory)
-if not os.path.exists(logs_directory):
-    os.makedirs(logs_directory)
+START_TIME = int(time.time())
+MODEL_NAME = f"{MODEL_NAME_PREFIX}_{MODEL_NUMBER}_{START_TIME}"
+LOGS_DIRECTORY = f"logs/train_sessions/"
+MODELS_DIRECTORY = f"models/train_sessions/{MODEL_NAME}/"
+if not os.path.exists(MODELS_DIRECTORY):
+    os.makedirs(MODELS_DIRECTORY)
+if not os.path.exists(LOGS_DIRECTORY):
+    os.makedirs(LOGS_DIRECTORY)
 
 
 environment = SnakeGymEnvironment()
 environment.reset()
-model = PPO("MlpPolicy", environment, verbose=1, tensorboard_log=logs_directory)
+model = PPO("MlpPolicy", environment, verbose=1, tensorboard_log=LOGS_DIRECTORY)
 
 
 episode = 0
 while True:
     episode += 1
     model.learn(
-        total_timesteps=total_timesteps_per_episode,
+        total_timesteps=TOTAL_TIMESTEPS_PER_EPISODE,
         reset_num_timesteps=False,
-        tb_log_name=f"{model_name}",
+        tb_log_name=f"{MODEL_NAME}",
         callback=SnakeGymEnvironmentCallback(),
     )
-    model.save(f"{models_directory}/{model_name}_{episode}_{total_timesteps_per_episode}")
+    if environment.scored_high_score:
+        print(f"Model saved with a high score of {environment.high_score}")
+        model.save(f"{MODELS_DIRECTORY}/{MODEL_NAME}_{episode}_{TOTAL_TIMESTEPS_PER_EPISODE}_{environment.high_score}")
+        environment.scored_high_score = False

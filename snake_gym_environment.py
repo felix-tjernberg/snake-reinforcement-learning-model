@@ -24,6 +24,7 @@ class SnakeGymEnvironment(Env):
         )
         self.snake_game = SnekGame()
         self.high_score = 0
+        self.scored_high_score = False
         self.score_past_10_games = deque(maxlen=10)
         self.previous_head_positions = deque(maxlen=self.MAX_SNAKE_LENGTH)
         for _ in range(self.MAX_SNAKE_LENGTH):
@@ -84,6 +85,7 @@ class SnakeGymEnvironment(Env):
         self.score_past_10_games.append(self.snake_game.score)
         if self.snake_game.score > self.high_score:
             self.high_score = self.snake_game.score
+            self.scored_high_score = True
 
         self.reward = 0
         self.snake_game.reset_game()

@@ -6,33 +6,38 @@ import os
 
 
 # Change these values before running script
-model_type = PPO
-model_name_prefix = "PPO_v3_non_linear_between_food_reward"
-total_timesteps_per_episode = 1000000
-starting_episode = 14377
-existing_model_name = "PPO_v3_non_linear_between_food_reward_1_1654770013_143770000"
-model_number = 1
+MODEL_TYPE = PPO
+MODEL_NAME_PREFIX = "PPO_v3_non_linear_between_food_reward"
+TOTAL_TIMESTEPS_PER_EPISODE = 1000000
+EXISTING_MODEL_NAME = "PPO_v3_non_linear_between_food_reward_1_1654770013_143770000"
+MODEL_NUMBER = 1
+episode = 14377  # change this to EXISTING_MODEL_NAME episode number
 
 
-start_time = int(time.time())
-saved_model_path = f"models/saved_models/{existing_model_name}"
-model_name = f"{model_name_prefix}_{model_number}_{start_time}"
-models_directory = f"models/train_sessions/{model_name}/"
-if not os.path.exists(models_directory):
-    os.makedirs(models_directory)
+START_TIME = int(time.time())
+SAVED_MODEL_PATH = f"models/saved_models/{EXISTING_MODEL_NAME}"
+MODEL_NAME = f"{MODEL_NAME_PREFIX}_{MODEL_NUMBER}_{START_TIME}"
+MODELS_DIRECTORY = f"models/train_sessions/{MODEL_NAME}/"
+if not os.path.exists(MODELS_DIRECTORY):
+    os.makedirs(MODELS_DIRECTORY)
 
 
 environment = SnakeGymEnvironment()
 environment.reset()
-loaded_model = model_type.load(saved_model_path, environment)
+loaded_model = MODEL_TYPE.load(SAVED_MODEL_PATH, environment)
 
 
 while True:
-    starting_episode += 1
+    episode += 1
     loaded_model.learn(
-        total_timesteps=total_timesteps_per_episode,
+        total_timesteps=TOTAL_TIMESTEPS_PER_EPISODE,
         reset_num_timesteps=False,
-        tb_log_name=f"{model_name}",
+        tb_log_name=f"{MODEL_NAME}",
         callback=SnakeGymEnvironmentCallback(),
     )
-    loaded_model.save(f"{models_directory}/{model_name}_{starting_episode}_{total_timesteps_per_episode}")
+    if environment.scored_high_score:
+        print(f"Model saved with a high score of {environment.high_score}")
+        loaded_model.save(
+            f"{MODELS_DIRECTORY}/{MODEL_NAME}_{episode}_{TOTAL_TIMESTEPS_PER_EPISODE}_{environment.high_score}"
+        )
+        environment.scored_high_score = False
