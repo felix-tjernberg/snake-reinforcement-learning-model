@@ -4,7 +4,7 @@ from numpy import array, float32, inf
 from snake_game.snake_game_agent_version import SnekGame
 from stable_baselines3.common.callbacks import BaseCallback
 from snake_gym_environment_helper_functions import (
-    append_coordinates_to_deque_in_float_form,
+    convert_snake_body_coordinates_to_float,
     inverse_percentage,
     manhattan_distance,
 )
@@ -19,22 +19,17 @@ class SnakeGymEnvironment(Env):
         self.observation_space = spaces.Box(
             low=-inf,
             high=inf,
-            shape=(1769,),
+            shape=(1768,),
             dtype=float32,
         )
         self.snake_game = SnekGame()
         self.high_score = 0
         self.scored_high_score = False
         self.score_past_10_games = deque(maxlen=10)
-        self.previous_head_positions = deque(maxlen=self.MAX_SNAKE_LENGTH)
-        for _ in range(self.MAX_SNAKE_LENGTH):
-            self.previous_head_positions.append(0.0)
 
     def step(self, action):
         self.snake_game.agent_action = action
         self.snake_game.game_tick()
-        if not self.snake_game.game_over:
-            append_coordinates_to_deque_in_float_form(self.snake_game.head, self.previous_head_positions)
         self.steps_taken_between_foods += 1
         self.total_steps_taken += 1
 
@@ -89,8 +84,6 @@ class SnakeGymEnvironment(Env):
 
         self.reward = 0
         self.snake_game.reset_game()
-        for _ in range(self.MAX_SNAKE_LENGTH):
-            self.previous_head_positions.append(0.0)
 
         self.manhattan_distance_reward_list = []
         self.first_manhattan_distance_to_food = manhattan_distance(self.snake_game.food, self.snake_game.head)
@@ -109,15 +102,20 @@ class SnakeGymEnvironment(Env):
         food = self.snake_game.food
         food_delta_x = snake_head.x - food.x
         food_delta_y = snake_head.y - food.y
+
+        # Convert snake body coordinates to floats and add 0.0 to make the list MAX_SNAKE_LENGTH long
+        snake_body_coordinates_float_representation = convert_snake_body_coordinates_to_float(self.snake_game.body)
+        for _ in range(self.MAX_SNAKE_LENGTH - len(snake_body_coordinates_float_representation)):
+            snake_body_coordinates_float_representation.append(0.0)
+
         return array(
             [
                 food_delta_x,
                 food_delta_y,
-                len(self.snake_game.body),
                 self.steps_taken_between_foods,
                 self.previous_direction,
             ]
-            + list(self.previous_head_positions),
+            + snake_body_coordinates_float_representation,
             dtype=float32,
         )
 

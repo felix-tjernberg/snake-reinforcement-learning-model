@@ -6,9 +6,9 @@ import os
 
 
 # Change these values before running script
-MODEL_NAME_PREFIX = "PPO_v4.2_head_position_1764_float_xy_observations"
+MODEL_NAME_PREFIX = "PPO_v4.3_head_position_1764_float_xy_observations"
 TOTAL_TIMESTEPS_PER_EPISODE = 100000
-MODEL_NUMBER = 4
+MODEL_NUMBER = 1
 
 
 START_TIME = int(time.time())

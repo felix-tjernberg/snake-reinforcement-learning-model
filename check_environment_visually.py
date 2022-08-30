@@ -6,15 +6,16 @@ environment.render()
 environment.reset()
 environment.snake_game.GAME_SPEED = 1
 
-# Test deque values are appended correctly
+# Test check body float observation
 environment.step(environment.action_space.sample())
+observation, _, _, _ = environment.step(environment.action_space.sample())
+print(environment.snake_game.body[:10])
+print(observation[4:10])
 environment.step(environment.action_space.sample())
-environment.step(environment.action_space.sample())
-print(environment.previous_head_positions)
+observation, _, _, _ = environment.step(environment.action_space.sample())
+print(environment.snake_game.body[:10])
+print(observation[4:10])
 
-# Test deque values are reset correctly
-environment.reset()
-print(environment.previous_head_positions)
 
 # Test keeping direction reward
 _, reward, _, _ = environment.step(environment.snake_game.DIRECTION["right"])
@@ -26,16 +27,10 @@ print("Reward for keeping direction:", reward)
 environment.reset()
 
 
-# Test eat food reward and 10 random actions
+# Test eat food reward
 environment.snake_game.food = Coordinate((environment.snake_game.head.x + 10), environment.snake_game.head.y)
 _, reward, _, _ = environment.step(environment.snake_game.DIRECTION["right"])
 print("Reward eating food", reward)
-for _ in range(10):
-    random_action = environment.action_space.sample()
-    # print("action", random_action)
-    observation, reward, _, _ = environment.step(random_action)
-    print("Reward", reward)
-    print("Observation", observation)
 
 
 # Test kill self punishment
