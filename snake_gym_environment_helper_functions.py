@@ -14,4 +14,4 @@ def inverse_percentage(value_one: int, value_two: int):
 
 def convert_snake_body_coordinates_to_float(snake_body_coordinates: list):
     """Takes a snake body list of coordinates and returns a modified version of that list where each coordinate is now a float in the format x//10.y//10"""
-    return [float(f"{coordinate.x//10}.{coordinate.y//10}") for coordinate in snake_body_coordinates]
+    return [float(f"{abs(coordinate.x//10)}.{abs(coordinate.y//10)}") for coordinate in snake_body_coordinates]
